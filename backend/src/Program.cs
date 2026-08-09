@@ -2,10 +2,28 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
+var allowedOrigins = (builder.Configuration["ALLOWED_ORIGINS"] ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    .Concat([
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ])
+    .Distinct()
+    .ToArray();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins)
+            .WithMethods("GET", "OPTIONS")
+            .AllowAnyHeader();
+    });
+});
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -35,6 +53,7 @@ var app = builder.Build();
 app.UseForwardedHeaders();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors("frontend");
 app.UseRateLimiter();
 
 app.MapControllers().RequireRateLimiting("per-ip");

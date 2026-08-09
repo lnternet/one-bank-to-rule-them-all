@@ -29,8 +29,9 @@ test('renders recent transactions on the homepage route', async () => {
     </HashRouter>,
   );
 
-  expect(screen.getByRole('heading', { name: /work in progress/i })).toBeInTheDocument();
   expect(await screen.findByText('Coffee shop')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /one bank to rule them all/i })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: /primary navigation/i })).toBeInTheDocument();
   expect(screen.getAllByText('-$4.75')).toHaveLength(2);
   expect(global.fetch).toHaveBeenCalledWith(
     '/api/accounts/demo-account/transactions',

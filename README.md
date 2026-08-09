@@ -90,6 +90,7 @@ Required GitHub repository variables:
 - `GCP_REGION` - Cloud Run and Artifact Registry region, for example `us-central1`.
 - `CLOUD_RUN_SERVICE_NAME` - Cloud Run service name, for example `one-bank-api`.
 - `GCP_ARTIFACT_REGISTRY_REPOSITORY` - Artifact Registry Docker repository name.
+- `ALLOWED_ORIGINS` - comma-separated frontend origins allowed by CORS, for example `https://your-github-user.github.io`.
 
 Required GitHub repository secrets:
 

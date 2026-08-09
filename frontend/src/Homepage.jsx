@@ -45,51 +45,88 @@ export default function Homepage() {
   );
 
   return (
-    <main className="page-shell">
-      <div className="dashboard">
-        <section className="hero" aria-labelledby="homepage-title">
-          <p className="eyebrow">One Bank to Rule Them All</p>
-          <h1 id="homepage-title">Work in progress</h1>
-        </section>
+    <div className="app-shell">
+      <header className="site-header">
+        <Logo />
+        <nav className="site-nav" aria-label="Primary navigation">
+          <a href="#transactions">Transactions</a>
+        </nav>
+      </header>
 
-        <section className="transactions-panel" aria-labelledby="transactions-title">
-          <div className="panel-header">
-            <div>
-              <p className="section-label">Account activity</p>
-              <h2 id="transactions-title">Recent transactions</h2>
-            </div>
-            <div className="summary-pill">
-              <span>Net</span>
-              <strong>{formatMoney(balanceImpact, 'USD')}</strong>
-            </div>
-          </div>
+      <main className="page-shell">
+        <div className="dashboard">
+          <section className="hero" aria-labelledby="homepage-title">
+            <p className="eyebrow">Private account overview</p>
+            <Logo className="hero-logo" headingId="homepage-title" />
+            <p className="hero-copy">
+              A clean view of account movement, built for fast checks and calm decisions.
+            </p>
+          </section>
 
-          {status === 'loading' && <p className="state-message">Loading transactions...</p>}
-          {status === 'error' && <p className="state-message state-message-error">{error}</p>}
-          {status === 'success' && transactions.length === 0 && (
-            <p className="state-message">No transactions found.</p>
-          )}
-          {status === 'success' && transactions.length > 0 && (
-            <ul className="transaction-list">
-              {transactions.map((transaction) => (
-                <li className="transaction-item" key={transaction.id}>
-                  <div className="transaction-mark" aria-hidden="true">
-                    {transaction.description.slice(0, 1)}
-                  </div>
-                  <div className="transaction-details">
-                    <strong>{transaction.description}</strong>
-                    <span>{formatDate(transaction.transactionDate)}</span>
-                  </div>
-                  <span className={transaction.amount < 0 ? 'amount debit' : 'amount credit'}>
-                    {formatMoney(transaction.amount, transaction.currency)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-    </main>
+          <section
+            className="transactions-panel"
+            id="transactions"
+            aria-labelledby="transactions-title"
+          >
+            <div className="panel-header">
+              <div>
+                <p className="section-label">Account activity</p>
+                <h2 id="transactions-title">Recent transactions</h2>
+              </div>
+              <div className="summary-pill">
+                <span>Net</span>
+                <strong>{formatMoney(balanceImpact, 'USD')}</strong>
+              </div>
+            </div>
+
+            {status === 'loading' && <p className="state-message">Loading transactions...</p>}
+            {status === 'error' && <p className="state-message state-message-error">{error}</p>}
+            {status === 'success' && transactions.length === 0 && (
+              <p className="state-message">No transactions found.</p>
+            )}
+            {status === 'success' && transactions.length > 0 && (
+              <ul className="transaction-list">
+                {transactions.map((transaction) => (
+                  <li className="transaction-item" key={transaction.id}>
+                    <div className="transaction-mark" aria-hidden="true">
+                      {transaction.description.slice(0, 1)}
+                    </div>
+                    <div className="transaction-details">
+                      <strong>{transaction.description}</strong>
+                      <span>{formatDate(transaction.transactionDate)}</span>
+                    </div>
+                    <span className={transaction.amount < 0 ? 'amount debit' : 'amount credit'}>
+                      {formatMoney(transaction.amount, transaction.currency)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      </main>
+
+      <footer className="site-footer">
+        <span>One Bank to Rule Them All</span>
+        <span>Secure account insight for everyday decisions.</span>
+      </footer>
+    </div>
+  );
+}
+
+function Logo({ className = '', headingId }) {
+  const Element = headingId ? 'h1' : 'div';
+
+  return (
+    <Element
+      aria-label="One Bank to Rule Them All"
+      className={`bank-logo ${className}`.trim()}
+      id={headingId}
+    >
+      <span className="ring-letter" aria-hidden="true" />
+      <span className="visually-hidden">O</span>
+      <span>ne Bank to Rule Them All</span>
+    </Element>
   );
 }
 

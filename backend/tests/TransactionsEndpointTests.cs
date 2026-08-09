@@ -39,6 +39,19 @@ public sealed class TransactionsEndpointTests : IClassFixture<WebApplicationFact
     }
 
     [Fact]
+    public async Task GetTransactions_ReturnsCorsHeaderForAllowedOrigin()
+    {
+        var client = CreateClientForIp("203.0.113.12");
+        client.DefaultRequestHeaders.Add("Origin", "http://localhost:5173");
+
+        var response = await client.GetAsync("/api/accounts/acct-cors/transactions");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins));
+        Assert.Contains("http://localhost:5173", origins);
+    }
+
+    [Fact]
     public async Task GetTransactions_ReturnsTooManyRequestsAfterTenRequestsPerMinute()
     {
         var client = CreateClientForIp("203.0.113.11");
