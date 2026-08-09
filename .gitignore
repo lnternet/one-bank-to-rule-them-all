@@ -131,13 +131,43 @@ dist
 # yarn v3
 .pnp.*
 .yarn/*
+**/.yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
 
 # Vite files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# ASP.NET / .NET
+bin/
+obj/
+TestResults/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+artifacts/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.DotSettings.user
+
+# OS / editor metadata
+.DS_Store
+Thumbs.db
