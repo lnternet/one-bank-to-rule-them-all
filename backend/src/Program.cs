@@ -1,5 +1,7 @@
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
+using OneBankToRuleThemAllAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowedOrigins = (builder.Configuration["ALLOWED_ORIGINS"] ?? string.Empty)
@@ -11,7 +13,12 @@ var allowedOrigins = (builder.Configuration["ALLOWED_ORIGINS"] ?? string.Empty)
     .Distinct()
     .ToArray();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+builder.Services.AddSingleton<IBankingRepository, InMemoryBankingRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>

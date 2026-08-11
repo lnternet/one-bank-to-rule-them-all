@@ -69,7 +69,10 @@ Swagger UI is available in development at `/swagger`.
 
 ### API Endpoints
 
-- `GET /api/accounts/{accountId}/transactions` - returns fake account transaction data.
+- `GET /api/users` - returns selectable fake users.
+- `GET /api/users/{userId}/accounts` - returns accounts for a user.
+- `GET /api/accounts/{accountId}/transactions` - returns transactions for an account.
+- `GET /api/transactions/{transactionId}` - returns transaction details.
 
 Requests to API controllers are rate-limited per client IP address to 10 requests per minute.
 
