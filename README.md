@@ -69,12 +69,8 @@ Swagger UI is available in development at `/swagger`.
 
 ### API Endpoints
 
-- `GET /api/users` - returns selectable fake users.
-- `GET /api/users/{userId}/accounts` - returns accounts for a user.
-- `GET /api/accounts/{accountId}/transactions` - returns transactions for an account.
-- `GET /api/transactions/{transactionId}` - returns transaction details.
-
 Requests to API controllers are rate-limited per client IP address to 10 requests per minute.
+Swagger: https://one-bank-to-rule-them-all-api-502428345364.europe-west1.run.app/swagger
 
 ### Run Tests
 
@@ -83,21 +79,16 @@ cd backend
 dotnet test
 ```
 
-### Deploy To Google Cloud Run
+## Task
 
-The backend is containerized with `backend/Dockerfile` and deployed by `.github/workflows/deploy-backend-cloud-run.yml`.
+**Task description:** Implement transaction details, shown after clicking on a single transaction in transaction list. How to reach it - log on, select an account from account list, you'll be navigated to transaction list. Transaction details can be implemented using approach of your choice and with design of your choice. Transaction details endpoint is already implemented in API.
 
-Required GitHub repository variables:
+Additionally to that, on webside startup load configurations from API endpoint - transaction types and spending categories. On the transaction details screen add a dropdown selector for spending category, sending PATCH HTTP request on selection (note - API endpoint does not exist).
 
-- `GCP_PROJECT_ID` - Google Cloud project ID.
-- `GCP_REGION` - Cloud Run and Artifact Registry region, for example `us-central1`.
-- `CLOUD_RUN_SERVICE_NAME` - Cloud Run service name, for example `one-bank-api`.
-- `GCP_ARTIFACT_REGISTRY_REPOSITORY` - Artifact Registry Docker repository name.
-- `ALLOWED_ORIGINS` - comma-separated frontend origins allowed by CORS, for example `https://your-github-user.github.io`.
+**Requirements:**
 
-Required GitHub repository secrets:
+- Use React Query when calling API endpoints;
+- Transaction Details page should have a "Print" button that would trigger a printing dialog of transaction content. Extra karma if content is formatted as a receipt and includes bank's name/logo.
+- Spending categories should be colorful and have icons (use icon library of your choice or static assets).
 
-- `GCP_WORKLOAD_IDENTITY_PROVIDER` - Workload Identity Provider resource name.
-- `GCP_SERVICE_ACCOUNT` - deployment service account email.
-
-The workflow builds the Docker image, pushes it to Artifact Registry, and deploys it to Cloud Run on pushes to `main` that change backend files. Swagger is exposed at `/swagger` in the deployed service.
+**For extra mile:** Use `OpenAI` APIs to integrate with `gpt-5.4-mini` LLM to automatically pick spending category from dropdown based on transaction details. User interface should notify user that preselection was done with help of AI. In this case also send a PATCH HTTP request to API. Key is stored in GitHub Actions Secrets named `OPENAI_API_KEY` and is also available as plaintext upon request.

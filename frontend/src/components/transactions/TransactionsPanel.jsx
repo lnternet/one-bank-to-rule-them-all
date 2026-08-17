@@ -57,23 +57,19 @@ export default function TransactionsPanel({ account }) {
                 type="button"
                 onClick={() => window.alert("Not implemented yet")}
               >
-                <div className="transaction-mark" aria-hidden="true">
-                  {transaction.message.slice(0, 1)}
-                </div>
-                <div className="transaction-details">
-                  <strong>{transaction.message}</strong>
-                  <span>
-                    {transaction.fromAccountName} to {transaction.toAccountName} ·{" "}
-                    {formatDate(transaction.transactionDate)} · {transaction.type}
-                  </span>
-                </div>
-                <span
+                <div
                   className={
                     transaction.amount < 0 ? "amount debit" : "amount credit"
                   }
                 >
                   {formatMoney(transaction.amount, transaction.currency)}
-                </span>
+                </div>
+                <div className="transaction-details">
+                  <strong>
+                    {transaction.fromAccountName} to {transaction.toAccountName}
+                  </strong>
+                  <span>{formatDate(transaction.transactionDate)}</span>
+                </div>
               </button>
             </li>
           ))}

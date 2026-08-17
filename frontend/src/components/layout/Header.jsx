@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext.jsx";
 import Logo from "../brand/Logo.jsx";
@@ -5,9 +6,12 @@ import Logo from "../brand/Logo.jsx";
 export default function Header() {
   const navigate = useNavigate();
   const { clearUser, user } = useUser();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const initials = user ? `${user.name[0] ?? ""}${user.surname[0] ?? ""}` : "";
 
   function handleLogoff() {
     clearUser();
+    setIsProfileMenuOpen(false);
     navigate("/");
   }
 
@@ -16,16 +20,30 @@ export default function Header() {
       <Logo />
       <div className="header-actions">
         <nav className="site-nav" aria-label="Primary navigation">
-          <a href="#accounts">Accounts</a>
-          <a href="#investments">Investments</a>
+          <span>Accounts</span>
+          <span>Investments</span>
         </nav>
         {user && <span className="user-chip">{user.name} {user.surname}</span>}
-        <button className="icon-button" type="button" aria-label="Open profile">
-          <span className="profile-icon" aria-hidden="true" />
-        </button>
-        <button className="icon-button" type="button" aria-label="Log off" onClick={handleLogoff}>
-          <span className="logoff-icon" aria-hidden="true" />
-        </button>
+        {user && (
+          <div className="profile-menu">
+            <button
+              aria-expanded={isProfileMenuOpen}
+              aria-haspopup="menu"
+              className="monogram-button"
+              type="button"
+              onClick={() => setIsProfileMenuOpen((isOpen) => !isOpen)}
+            >
+              {initials}
+            </button>
+            {isProfileMenuOpen && (
+              <div className="profile-menu-panel" role="menu">
+                <button role="menuitem" type="button" onClick={handleLogoff}>
+                  Log off
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );
