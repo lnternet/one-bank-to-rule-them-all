@@ -97,8 +97,14 @@ Alongside development, enrich repository with documentation:
 - Draw basic architectural diagram of this solution in monorepository and explain tech stack and how system is interconnected.
 - Write a paragraph or two about your new Transaction Details screen and reasoning behind design and code choices. Include any wireframes, mock designs, etc.
 
+---
+
 **For extra mile:** Use `OpenAI` APIs to integrate with `gpt-5.4-mini` LLM to automatically pick spending category from dropdown based on transaction details. User interface should notify user that preselection was done with help of AI. In this case also send a PATCH HTTP request to API. Key is stored in GitHub Actions Secrets named `OPENAI_API_KEY` and is also available as plaintext upon request.
 
+---
+
 **For extra extra mile:**: Add `SAST` to scan for vulnerabilities as a GitHub Action separate step using `CodeQL`, fail build only if critical vulnerabilities are discovered. Showcase found vulnerabilities, explain `SAST vs SCA` and what vulnerabilities are.
+
+---
 
 **For extra extra extra mile:** Create UI tests for your new screen. Use package of your choice, or suggestion - `Playwright`. Add this as a separate step in GitHub Actions, but do not fail build if UI test fails.
