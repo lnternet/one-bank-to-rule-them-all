@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { getAccounts } from "../../api/bankingApi.js";
 import { useUser } from "../../context/UserContext.jsx";
+import { usePageNavigate } from "../../hooks/usePageNavigate.js";
 
 export default function AccountList() {
-  const navigate = useNavigate();
+  const navigate = usePageNavigate();
   const { user } = useUser();
   const {
     data: accounts = [],

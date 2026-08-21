@@ -11,4 +11,8 @@ public interface IBankingRepository
     IReadOnlyList<AccountTransaction> GetTransactionsByAccountId(string accountId);
 
     AccountTransaction? GetTransactionById(string transactionId);
+
+    AccountTransaction? UpdateTransactionSpendingCategory(
+        string transactionId,
+        SpendingCategory spendingCategory);
 }

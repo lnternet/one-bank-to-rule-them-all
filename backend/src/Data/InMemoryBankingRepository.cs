@@ -21,7 +21,9 @@ public sealed class InMemoryBankingRepository : IBankingRepository
         new("acct-mirror", "user-galadriel", "Mirror Forecast Fund", "**** 3332", 12000.00m, "USD"),
     ];
 
-    private static readonly IReadOnlyList<AccountTransaction> Transactions =
+    private static readonly object TransactionsLock = new();
+
+    private static readonly List<AccountTransaction> Transactions =
     [
         Tx("txn-001", "acct-bag-end", "acct-mithril", -25.50m, "Second breakfast supplies, absolutely essential", TransactionType.Instant, 1),
         Tx("txn-002", "acct-bag-end", "acct-strider", -120.00m, "Ranger escort fee, suspicious but useful", TransactionType.Normal, 2),
@@ -74,18 +76,49 @@ public sealed class InMemoryBankingRepository : IBankingRepository
 
     public IReadOnlyList<AccountTransaction> GetTransactionsByAccountId(string accountId)
     {
-        return Transactions
-            .Where(transaction =>
-                string.Equals(transaction.FromAccountId, accountId, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(transaction.ToAccountId, accountId, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(transaction => transaction.TransactionDate)
-            .ToList();
+        lock (TransactionsLock)
+        {
+            return Transactions
+                .Where(transaction =>
+                    string.Equals(transaction.FromAccountId, accountId, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(transaction.ToAccountId, accountId, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(transaction => transaction.TransactionDate)
+                .ToList();
+        }
     }
 
     public AccountTransaction? GetTransactionById(string transactionId)
     {
-        return Transactions.FirstOrDefault(transaction =>
-            string.Equals(transaction.Id, transactionId, StringComparison.OrdinalIgnoreCase));
+        lock (TransactionsLock)
+        {
+            return Transactions.FirstOrDefault(transaction =>
+                string.Equals(transaction.Id, transactionId, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    public AccountTransaction? UpdateTransactionSpendingCategory(
+        string transactionId,
+        SpendingCategory spendingCategory)
+    {
+        lock (TransactionsLock)
+        {
+            var transactionIndex = Transactions.FindIndex(transaction =>
+                string.Equals(transaction.Id, transactionId, StringComparison.OrdinalIgnoreCase));
+
+            if (transactionIndex < 0)
+            {
+                return null;
+            }
+
+            var updatedTransaction = Transactions[transactionIndex] with
+            {
+                SpendingCategory = spendingCategory,
+            };
+
+            Transactions[transactionIndex] = updatedTransaction;
+
+            return updatedTransaction;
+        }
     }
 
     private static AccountTransaction Tx(
@@ -106,8 +139,17 @@ public sealed class InMemoryBankingRepository : IBankingRepository
             TransactionDate: new DateOnly(2026, 8, day),
             Message: message,
             Type: type,
+            SpendingCategory: GetSpendingCategory(id),
             Amount: amount,
             Currency: "USD");
+    }
+
+    private static SpendingCategory GetSpendingCategory(string transactionId)
+    {
+        var numericId = int.Parse(transactionId.Split('-')[1]);
+        var categories = Enum.GetValues<SpendingCategory>();
+
+        return categories[(numericId - 1) % categories.Length];
     }
 
     private static string GetAccountName(string accountId)
