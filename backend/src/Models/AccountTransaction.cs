@@ -9,5 +9,6 @@ public sealed record AccountTransaction(
     DateOnly TransactionDate,
     string Message,
     TransactionType Type,
+    SpendingCategory SpendingCategory,
     decimal Amount,
     string Currency);

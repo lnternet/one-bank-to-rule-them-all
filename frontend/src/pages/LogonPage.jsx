@@ -1,13 +1,33 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { getUsers } from "../api/bankingApi.js";
 import Logo from "../components/brand/Logo.jsx";
 import Footer from "../components/layout/Footer.jsx";
+import ThemeToggle from "../components/layout/ThemeToggle.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 import { useUser } from "../context/UserContext.jsx";
+import { usePageNavigate } from "../hooks/usePageNavigate.js";
+import bankYardImage from "../../images/bank image yard.jpg";
+import bankImage from "../../images/bank image.jpg";
+import bankHeroImage from "../../images/bank.jpg";
+import bankNightOneImage from "../../images/bank night 1.jpg";
+import bankNightTwoImage from "../../images/night bank 2.jpg";
+import bankNightThreeImage from "../../images/night bank 3.jpg";
+
+const lightLandingImages = [bankYardImage, bankImage, bankHeroImage];
+const darkLandingImages = [
+  bankNightOneImage,
+  bankNightTwoImage,
+  bankNightThreeImage,
+];
 
 export default function LogonPage() {
-  const navigate = useNavigate();
+  const navigate = usePageNavigate();
+  const { theme } = useTheme();
   const { selectUser } = useUser();
+  const landingImages =
+    theme === "dark" ? darkLandingImages : lightLandingImages;
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const {
     data: users = [],
     isError,
@@ -17,6 +37,20 @@ export default function LogonPage() {
     queryKey: ["users"],
     queryFn: getUsers,
   });
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveImageIndex((currentIndex) =>
+        (currentIndex + 1) % landingImages.length,
+      );
+    }, 4500);
+
+    return () => window.clearInterval(intervalId);
+  }, [landingImages.length]);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [theme]);
 
   function handleUserSelection(user) {
     const [name, ...surnameParts] = user.name.split(" ");
@@ -31,13 +65,27 @@ export default function LogonPage() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell logon-app-shell">
       <header className="site-header logon-header">
         <Logo />
+        <div className="logon-header-actions">
+          <ThemeToggle />
+        </div>
       </header>
 
-      <main className="page-shell logon-shell">
-        <section className="widget logon-panel" aria-labelledby="logon-title">
+      <main className="logon-landing-shell">
+        <div className="landing-image-cycle" aria-hidden="true">
+          {landingImages.map((image, index) => (
+            <img
+              key={image}
+              src={image}
+              alt=""
+              className={index === activeImageIndex ? "is-active" : ""}
+            />
+          ))}
+        </div>
+
+        <section className="logon-panel" aria-labelledby="logon-title">
           <div className="widget-header">
             <div>
               <p className="section-label">Select profile</p>

@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
 using OneBankToRuleThemAllAPI.Data;
+using OneBankToRuleThemAllAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowedOrigins = (builder.Configuration["ALLOWED_ORIGINS"] ?? string.Empty)
@@ -19,6 +20,10 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 builder.Services.AddSingleton<IBankingRepository, InMemoryBankingRepository>();
+builder.Services.AddHttpClient<ITransactionCategorizer, GeminiTransactionCategorizer>(client =>
+{
+    client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
@@ -27,7 +32,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(allowedOrigins)
-            .WithMethods("GET", "OPTIONS")
+            .WithMethods("GET", "PATCH", "OPTIONS")
             .AllowAnyHeader();
     });
 });

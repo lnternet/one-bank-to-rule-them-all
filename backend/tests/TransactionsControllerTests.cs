@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using OneBankToRuleThemAllAPI.Controllers;
 using OneBankToRuleThemAllAPI.Data;
 using OneBankToRuleThemAllAPI.Models;
+using OneBankToRuleThemAllAPI.Services;
 using Xunit;
 
 namespace OneBankToRuleThemAllAPI.Tests;
@@ -11,7 +12,9 @@ public sealed class TransactionsControllerTests
     [Fact]
     public void GetAccountTransactions_ReturnsFakeTransactionsForAccount()
     {
-        var controller = new TransactionsController(new InMemoryBankingRepository());
+        var controller = new TransactionsController(
+            new InMemoryBankingRepository(),
+            new FakeTransactionCategorizer());
 
         var result = controller.GetAccountTransactions("acct-bag-end");
 
@@ -26,7 +29,9 @@ public sealed class TransactionsControllerTests
     [Fact]
     public void GetTransaction_ReturnsTransactionDetails()
     {
-        var controller = new TransactionsController(new InMemoryBankingRepository());
+        var controller = new TransactionsController(
+            new InMemoryBankingRepository(),
+            new FakeTransactionCategorizer());
 
         var result = controller.GetTransaction("txn-001");
 
@@ -36,5 +41,15 @@ public sealed class TransactionsControllerTests
         Assert.Equal("txn-001", transaction.Id);
         Assert.Equal(TransactionType.Instant, transaction.Type);
         Assert.Equal("Bag End Checking", transaction.FromAccountName);
+    }
+
+    private sealed class FakeTransactionCategorizer : ITransactionCategorizer
+    {
+        public Task<SpendingCategory> CategorizeAsync(
+            AccountTransaction transaction,
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult(SpendingCategory.Misc);
+        }
     }
 }
